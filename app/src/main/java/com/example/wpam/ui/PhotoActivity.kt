@@ -1,4 +1,4 @@
-package com.example.wpam
+package com.example.wpam.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -16,18 +16,18 @@ import androidx.camera.core.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import com.example.wpam.R
 import java.io.File
 import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
 private const val REQUEST_CODE_PERMISSIONS = 10
 private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 
-class MainActivity : AppCompatActivity(), LifecycleOwner {
+class PhotoActivity : AppCompatActivity(), LifecycleOwner {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_photo)
         viewFinder = findViewById(R.id.view_finder)
 
         // Request camera permissions
@@ -35,7 +35,10 @@ class MainActivity : AppCompatActivity(), LifecycleOwner {
             viewFinder.post { startCamera() }
         } else {
             ActivityCompat.requestPermissions(
-                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
+                this,
+                REQUIRED_PERMISSIONS,
+                REQUEST_CODE_PERMISSIONS
+            )
         }
 
         // Every time the provided texture view changes, recompute layout
