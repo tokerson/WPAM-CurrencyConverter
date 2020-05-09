@@ -15,6 +15,7 @@ class CurrencyRepository(
     private val FIXER_API_KEY = context.getString(R.string.fixer_api_key)
 
     val symbols = MutableLiveData<List<Currency>>()
+    val conversionResult = MutableLiveData<Float>()
 
     fun getAllSymbols(): MutableLiveData<List<Currency>> {
         class GetAllSymbolsTask : AsyncTask<Void, Void, List<Currency>>() {
@@ -30,7 +31,12 @@ class CurrencyRepository(
                         currencyServiceResponse!!.asJsonObject.get("symbols").asJsonObject
 
                     for (symbol in fetchedSymbols2.entrySet()) {
-                        fetchedSymbols.add(Currency(shortName = symbol.key, name = symbol.value.asString))
+                        fetchedSymbols.add(
+                            Currency(
+                                shortName = symbol.key,
+                                name = symbol.value.asString
+                            )
+                        )
                     }
                     fetchedSymbols
                 } catch (exception: SocketTimeoutException) {
@@ -46,5 +52,32 @@ class CurrencyRepository(
 
         GetAllSymbolsTask().execute()
         return symbols
+    }
+
+    fun convertCurrencies(from: Currency, to: Currency, amount: Float): MutableLiveData<Float> {
+        class ConvertCurrenciesTask : AsyncTask<Void, Void, Float>() {
+            override fun doInBackground(vararg params: Void?): Float {
+                println(from.shortName)
+                val currencyServiceResponse = currencyService.getLatestRates(
+                    key = FIXER_API_KEY,
+                    symbols = from.shortName + "," + to.shortName
+                ).execute().body()
+
+                val rates = currencyServiceResponse!!.asJsonObject.get("rates").asJsonObject
+
+                val baseRate = rates.get(from.shortName).asFloat
+                val toConvertRate = rates.get(to.shortName).asFloat
+
+                return amount *  toConvertRate / baseRate
+            }
+
+            override fun onPostExecute(result: Float?) {
+                super.onPostExecute(result)
+                conversionResult.value = result
+            }
+        }
+
+        ConvertCurrenciesTask().execute()
+        return conversionResult
     }
 }
