@@ -30,7 +30,7 @@ class CurrencyRepository(
                         currencyServiceResponse!!.asJsonObject.get("symbols").asJsonObject
 
                     for (symbol in fetchedSymbols2.entrySet()) {
-                        fetchedSymbols.add(Currency(symbol.key, symbol.value.asString))
+                        fetchedSymbols.add(Currency(shortName = symbol.key, name = symbol.value.asString))
                     }
                     fetchedSymbols
                 } catch (exception: SocketTimeoutException) {
