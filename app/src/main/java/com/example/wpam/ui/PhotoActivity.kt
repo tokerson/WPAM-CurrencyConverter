@@ -1,29 +1,30 @@
 package com.example.wpam.ui
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.Manifest
 import android.content.pm.PackageManager
-import android.util.Size
 import android.graphics.Matrix
-import android.util.Log
+import android.graphics.Point
+import android.os.Bundle
+import android.util.Size
 import android.view.Surface
 import android.view.TextureView
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.example.wpam.GraphicOverlay
 import com.example.wpam.R
+import com.example.wpam.TextGraphic
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
+import kotlinx.android.synthetic.main.activity_photo.*
 import org.koin.android.viewmodel.ext.android.viewModel
-import java.io.File
 import java.util.concurrent.Executors
 
 private const val REQUEST_CODE_PERMISSIONS = 10
@@ -37,6 +38,11 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo)
         viewFinder = findViewById(R.id.view_finder)
+
+        val display = windowManager.defaultDisplay
+        val _size = Point()
+        display.getSize(_size)
+        size = Size(_size.x, _size.y)
 
         // Request camera permissions
         if (allPermissionsGranted()) {
@@ -57,10 +63,12 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
 
     private val executor = Executors.newSingleThreadExecutor()
     private lateinit var viewFinder: TextureView
+    private lateinit var size: Size
 
     private fun startCamera() {
+
         val previewConfig = PreviewConfig.Builder().apply {
-            setTargetResolution(Size(640, 480))
+            setTargetResolution(size)
         }.build()
 
 
@@ -85,6 +93,7 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
                 // select a capture mode which will infer the appropriate
                 // resolution based on aspect ration and requested mode
                 setCaptureMode(ImageCapture.CaptureMode.MIN_LATENCY)
+                setTargetResolution(size)
             }.build()
 
         // Build the image capture use case and attach button click listener
@@ -93,6 +102,8 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
             imageCapture.takePicture(executor, object : ImageCapture.OnImageCapturedListener() {
                 override fun onCaptureSuccess(image: ImageProxy?, rotationDegrees: Int) {
                     val imageAnalyzer = YourImageAnalyzer()
+                    val height = image?.height
+                    val width = image?.width
                     imageAnalyzer.analyze(image, rotationDegrees)
                     super.onCaptureSuccess(image, rotationDegrees)
                 }
@@ -108,6 +119,16 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
             val result = detector.processImage(it).addOnSuccessListener { firebaseVisionText ->
                 println("task completed successfully")
                 println(firebaseVisionText.text)
+                graphic_overlay.clear()
+                for (block in firebaseVisionText.textBlocks) {
+                    for (line in block.lines) {
+                        for (element in line.elements) {
+                            val textGraphic: GraphicOverlay.Graphic =
+                                TextGraphic(graphic_overlay, element)
+                            graphic_overlay.add(textGraphic)
+                        }
+                    }
+                }
             }.addOnFailureListener { e ->
                 println("Failure")
                 println(e)
