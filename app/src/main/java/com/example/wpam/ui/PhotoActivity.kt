@@ -16,7 +16,13 @@ import androidx.camera.core.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.example.wpam.R
+import com.google.firebase.ml.vision.FirebaseVision
+import com.google.firebase.ml.vision.common.FirebaseVisionImage
+import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
+import org.koin.android.viewmodel.ext.android.viewModel
 import java.io.File
 import java.util.concurrent.Executors
 
@@ -24,6 +30,8 @@ private const val REQUEST_CODE_PERMISSIONS = 10
 private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 
 class PhotoActivity : AppCompatActivity(), LifecycleOwner {
+
+    private val photoViewModel: PhotoViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,32 +90,29 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
         // Build the image capture use case and attach button click listener
         val imageCapture = ImageCapture(imageCaptureConfig)
         findViewById<ImageButton>(R.id.capture_button).setOnClickListener {
-            val file = File(externalMediaDirs.first(),
-                "${System.currentTimeMillis()}.jpg")
+            imageCapture.takePicture(executor, object : ImageCapture.OnImageCapturedListener() {
+                override fun onCaptureSuccess(image: ImageProxy?, rotationDegrees: Int) {
+                    val imageAnalyzer = YourImageAnalyzer()
+                    imageAnalyzer.analyze(image, rotationDegrees)
+                    super.onCaptureSuccess(image, rotationDegrees)
+                }
+            })
 
-            imageCapture.takePicture(file, executor,
-                object : ImageCapture.OnImageSavedListener {
-                    override fun onError(
-                        imageCaptureError: ImageCapture.ImageCaptureError,
-                        message: String,
-                        exc: Throwable?
-                    ) {
-                        val msg = "Photo capture failed: $message"
-                        Log.e("CameraXApp", msg, exc)
-                        viewFinder.post {
-                            Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                    override fun onImageSaved(file: File) {
-                        val msg = "Photo capture succeeded: ${file.absolutePath}"
-                        Log.d("CameraXApp", msg)
-                        viewFinder.post {
-                            Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                })
         }
+
+        photoViewModel.image.observe(this@PhotoActivity, Observer {
+            println("firebase image")
+            println(it)
+            val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
+
+            val result = detector.processImage(it).addOnSuccessListener { firebaseVisionText ->
+                println("task completed successfully")
+                println(firebaseVisionText.text)
+            }.addOnFailureListener { e ->
+                println("Failure")
+                println(e)
+            }
+        })
 
         // Bind use cases to lifecycle
         // If Android Studio complains about "this" being not a LifecycleOwner
@@ -124,7 +129,7 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
         val centerY = viewFinder.height / 2f
 
         // Correct preview output to account for display rotation
-        val rotationDegrees = when(viewFinder.display.rotation) {
+        val rotationDegrees = when (viewFinder.display.rotation) {
             Surface.ROTATION_0 -> 0
             Surface.ROTATION_90 -> 90
             Surface.ROTATION_180 -> 180
@@ -142,14 +147,17 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
      * been granted? If yes, start Camera. Otherwise display a toast
      */
     override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        requestCode: Int, permissions: Array<String>, grantResults: IntArray
+    ) {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
                 viewFinder.post { startCamera() }
             } else {
-                Toast.makeText(this,
+                Toast.makeText(
+                    this,
                     "Permissions not granted by the user.",
-                    Toast.LENGTH_SHORT).show()
+                    Toast.LENGTH_SHORT
+                ).show()
                 finish()
             }
         }
@@ -160,6 +168,30 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
      */
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
-            baseContext, it) == PackageManager.PERMISSION_GRANTED
+            baseContext, it
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    inner class YourImageAnalyzer : ImageAnalysis.Analyzer {
+        private fun degreesToFirebaseRotation(degrees: Int): Int = when (degrees) {
+            0 -> FirebaseVisionImageMetadata.ROTATION_0
+            90 -> FirebaseVisionImageMetadata.ROTATION_90
+            180 -> FirebaseVisionImageMetadata.ROTATION_180
+            270 -> FirebaseVisionImageMetadata.ROTATION_270
+            else -> throw Exception("Rotation must be 0, 90, 180, or 270.")
+        }
+
+        override fun analyze(imageProxy: ImageProxy?, degrees: Int) {
+            val mediaImage = imageProxy?.image
+            val imageRotation = degreesToFirebaseRotation(degrees)
+            if (mediaImage != null) {
+                photoViewModel.image.postValue(
+                    FirebaseVisionImage.fromMediaImage(
+                        mediaImage,
+                        imageRotation
+                    )
+                )
+            }
+        }
     }
 }
