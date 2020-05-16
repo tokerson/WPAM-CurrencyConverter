@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"
          />
 
-    <com.example.wpam.GraphicOverlay
+    <com.example.wpam.graphic.GraphicOverlay
         android:id="@+id/graphic_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

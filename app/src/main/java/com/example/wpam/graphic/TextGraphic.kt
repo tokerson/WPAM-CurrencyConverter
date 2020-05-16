@@ -11,14 +11,14 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-package com.example.wpam
+package com.example.wpam.graphic
 
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.Log
-import com.example.wpam.GraphicOverlay.Graphic
+import com.example.wpam.graphic.GraphicOverlay.Graphic
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 
 /**
@@ -57,12 +57,16 @@ class TextGraphic internal constructor(
 
     init {
         rectPaint = Paint()
-        rectPaint.color = TEXT_COLOR
+        rectPaint.color =
+            TEXT_COLOR
         rectPaint.style = Paint.Style.STROKE
-        rectPaint.strokeWidth = STROKE_WIDTH
+        rectPaint.strokeWidth =
+            STROKE_WIDTH
         textPaint = Paint()
-        textPaint.color = TEXT_COLOR
-        textPaint.textSize = TEXT_SIZE
+        textPaint.color =
+            TEXT_COLOR
+        textPaint.textSize =
+            TEXT_SIZE
         // Redraw the overlay, as this graphic has been added.
         postInvalidate()
     }

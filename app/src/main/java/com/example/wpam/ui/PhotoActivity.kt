@@ -2,6 +2,7 @@ package com.example.wpam.ui
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.graphics.Point
 import android.os.Bundle
@@ -17,9 +18,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import com.example.wpam.GraphicOverlay
+import com.example.wpam.graphic.GraphicOverlay
 import com.example.wpam.R
-import com.example.wpam.TextGraphic
+import com.example.wpam.graphic.TextGraphic
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
@@ -44,7 +45,6 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
         display.getSize(_size)
         size = Size(_size.x, _size.y)
 
-        // Request camera permissions
         if (allPermissionsGranted()) {
             viewFinder.post { startCamera() }
         } else {
@@ -55,7 +55,6 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
             )
         }
 
-        // Every time the provided texture view changes, recompute layout
         viewFinder.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             updateTransform()
         }
@@ -71,14 +70,10 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
             setTargetResolution(size)
         }.build()
 
-
-        // Build the viewfinder use case
         val preview = Preview(previewConfig)
 
-        // Every time the viewfinder is updated, recompute layout
         preview.setOnPreviewOutputUpdateListener {
 
-            // To update the SurfaceTexture, we have to remove it and re-add it
             val parent = viewFinder.parent as ViewGroup
             parent.removeView(viewFinder)
             parent.addView(viewFinder, 0)
@@ -89,21 +84,15 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
 
         val imageCaptureConfig = ImageCaptureConfig.Builder()
             .apply {
-                // We don't set a resolution for image capture; instead, we
-                // select a capture mode which will infer the appropriate
-                // resolution based on aspect ration and requested mode
                 setCaptureMode(ImageCapture.CaptureMode.MIN_LATENCY)
                 setTargetResolution(size)
             }.build()
 
-        // Build the image capture use case and attach button click listener
         val imageCapture = ImageCapture(imageCaptureConfig)
         findViewById<ImageButton>(R.id.capture_button).setOnClickListener {
             imageCapture.takePicture(executor, object : ImageCapture.OnImageCapturedListener() {
                 override fun onCaptureSuccess(image: ImageProxy?, rotationDegrees: Int) {
                     val imageAnalyzer = YourImageAnalyzer()
-                    val height = image?.height
-                    val width = image?.width
                     imageAnalyzer.analyze(image, rotationDegrees)
                     super.onCaptureSuccess(image, rotationDegrees)
                 }
@@ -112,11 +101,17 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
         }
 
         photoViewModel.image.observe(this@PhotoActivity, Observer {
-            println("firebase image")
-            println(it)
             val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
+            val imageToProcess = FirebaseVisionImage.fromBitmap(
+                Bitmap.createScaledBitmap(
+                    it.bitmap,
+                    size.width,
+                    size.height,
+                    false
+                )
+            )
 
-            val result = detector.processImage(it).addOnSuccessListener { firebaseVisionText ->
+            detector.processImage(imageToProcess).addOnSuccessListener { firebaseVisionText ->
                 println("task completed successfully")
                 println(firebaseVisionText.text)
                 graphic_overlay.clear()
@@ -124,7 +119,10 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
                     for (line in block.lines) {
                         for (element in line.elements) {
                             val textGraphic: GraphicOverlay.Graphic =
-                                TextGraphic(graphic_overlay, element)
+                                TextGraphic(
+                                    graphic_overlay,
+                                    element
+                                )
                             graphic_overlay.add(textGraphic)
                         }
                     }
@@ -135,21 +133,15 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
             }
         })
 
-        // Bind use cases to lifecycle
-        // If Android Studio complains about "this" being not a LifecycleOwner
-        // try rebuilding the project or updating the appcompat dependency to
-        // version 1.1.0 or higher.
         CameraX.bindToLifecycle(this, preview, imageCapture)
     }
 
     private fun updateTransform() {
         val matrix = Matrix()
 
-        // Compute the center of the view finder
         val centerX = viewFinder.width / 2f
         val centerY = viewFinder.height / 2f
 
-        // Correct preview output to account for display rotation
         val rotationDegrees = when (viewFinder.display.rotation) {
             Surface.ROTATION_0 -> 0
             Surface.ROTATION_90 -> 90
@@ -159,14 +151,9 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
         }
         matrix.postRotate(-rotationDegrees.toFloat(), centerX, centerY)
 
-        // Finally, apply transformations to our TextureView
         viewFinder.setTransform(matrix)
     }
 
-    /**
-     * Process result from permission request dialog box, has the request
-     * been granted? If yes, start Camera. Otherwise display a toast
-     */
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults: IntArray
     ) {
@@ -184,9 +171,6 @@ class PhotoActivity : AppCompatActivity(), LifecycleOwner {
         }
     }
 
-    /**
-     * Check if all permission specified in the manifest have been granted
-     */
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
             baseContext, it
