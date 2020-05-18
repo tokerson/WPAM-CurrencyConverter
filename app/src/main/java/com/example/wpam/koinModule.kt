@@ -1,7 +1,9 @@
-package com.example.wpam.service
+package com.example.wpam
 
 import com.example.wpam.data.CurrencyRepository
+import com.example.wpam.service.CurrencyService
 import com.example.wpam.ui.MainViewModel
+import com.example.wpam.ui.PhotoViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module.module
 import retrofit2.Retrofit
@@ -22,4 +24,6 @@ val koinModule = module {
     single { CurrencyRepository(get(), androidContext()) }
 
     single { MainViewModel(get()) }
+
+    single { PhotoViewModel() }
 }
