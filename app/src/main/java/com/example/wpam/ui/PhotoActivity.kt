@@ -14,8 +14,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import com.example.wpam.graphic.GraphicOverlay
 import com.example.wpam.R
+import com.example.wpam.graphic.GraphicOverlay
 import com.example.wpam.graphic.TextGraphic
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
@@ -23,6 +23,7 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import kotlinx.android.synthetic.main.fragment_notifications.*
 import kotlinx.android.synthetic.main.fragment_notifications.view.*
 import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.ext.checkedStringValue
 import java.util.concurrent.Executors
 
 private const val REQUEST_CODE_PERMISSIONS = 10
@@ -43,11 +44,12 @@ class PhotoActivity : Fragment(), LifecycleOwner {
     ): View? {
         root = inflater.inflate(R.layout.fragment_notifications, container, false)
 
+        val display = activity!!.windowManager.defaultDisplay
+        size = Size(display.width, display.height)
 
         viewFinder = root.findViewById(R.id.view_finder)
 
-        size = Size(root.width, root.height)
-
+        println(size)
         if (allPermissionsGranted()) {
             viewFinder.post { startCamera() }
         } else {
@@ -61,6 +63,7 @@ class PhotoActivity : Fragment(), LifecycleOwner {
         viewFinder.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             updateTransform()
         }
+
         return root
     }
 

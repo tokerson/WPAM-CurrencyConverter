@@ -13,7 +13,6 @@
         tools:layout="@layout/fragment_home"
         />
 
-
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.wpam.ui.PhotoActivity"
