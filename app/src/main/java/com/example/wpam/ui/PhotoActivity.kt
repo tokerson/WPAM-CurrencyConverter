@@ -116,12 +116,13 @@ class PhotoActivity : Fragment(), LifecycleOwner {
             )
 
             detector.processImage(imageToProcess).addOnSuccessListener { firebaseVisionText ->
-                println("task completed successfully")
-                println(firebaseVisionText.text)
                 graphic_overlay.clear()
                 for (block in firebaseVisionText.textBlocks) {
                     for (line in block.lines) {
                         for (element in line.elements) {
+                            element.text
+                            val regex ="^\\d*\\.?\\d{2}".toRegex()
+                            println(regex.find(element.text, 0)?.value)
                             val textGraphic: GraphicOverlay.Graphic =
                                 TextGraphic(
                                     graphic_overlay,
@@ -131,9 +132,6 @@ class PhotoActivity : Fragment(), LifecycleOwner {
                         }
                     }
                 }
-            }.addOnFailureListener { e ->
-                println("Failure")
-                println(e)
             }
         })
 
