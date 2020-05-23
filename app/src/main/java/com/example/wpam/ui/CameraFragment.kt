@@ -48,7 +48,6 @@ class CameraFragment : Fragment(), LifecycleOwner {
 
         viewFinder = root.findViewById(R.id.view_finder)
 
-        println(size)
         if (allPermissionsGranted()) {
             viewFinder.post { startCamera() }
         } else {

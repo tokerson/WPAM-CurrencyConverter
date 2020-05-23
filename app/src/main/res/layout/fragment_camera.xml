@@ -13,27 +13,31 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.example.wpam.graphic.GraphicOverlay
         android:id="@+id/graphic_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="@id/view_finder"
+        android:layout_alignParentStart="true"
         app:layout_constraintBottom_toBottomOf="@id/view_finder"
         app:layout_constraintLeft_toLeftOf="@id/view_finder"
         app:layout_constraintRight_toRightOf="@id/view_finder"
-        android:layout_alignParentStart="true" />
+        app:layout_constraintTop_toTopOf="@id/view_finder" />
 
-    <ImageButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/capture_button"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginBottom="72dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:backgroundTint="@color/gray"
+        app:fabCustomSize="60dp"
         app:layout_constraintBottom_toBottomOf="@+id/view_finder"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@android:drawable/ic_menu_camera" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
