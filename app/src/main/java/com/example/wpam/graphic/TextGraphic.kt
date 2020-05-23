@@ -13,10 +13,8 @@
 // limitations under the License.
 package com.example.wpam.graphic
 
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.RectF
+import android.gesture.OrientedBoundingBox
+import android.graphics.*
 import android.util.Log
 import com.example.wpam.graphic.GraphicOverlay.Graphic
 import com.google.firebase.ml.vision.text.FirebaseVisionText
@@ -27,10 +25,11 @@ import com.google.firebase.ml.vision.text.FirebaseVisionText
  */
 class TextGraphic internal constructor(
     overlay: GraphicOverlay?,
-    private val element: FirebaseVisionText.Element?
+    private val content: String,
+    private val boundingBox: Rect?
 ) :
     Graphic(overlay!!) {
-    private val rectPaint: Paint
+    private val rectPaint: Paint = Paint()
     private val textPaint: Paint
 
     /**
@@ -38,14 +37,14 @@ class TextGraphic internal constructor(
      */
     override fun draw(canvas: Canvas?) {
         Log.d(TAG, "on draw text graphic")
-        checkNotNull(element) { "Attempting to draw a null text." }
+        checkNotNull(boundingBox) { "Attempting to draw a null text." }
 
         // Draws the bounding box around the TextBlock.
-        val rect = RectF(element.boundingBox)
+        val rect = RectF(boundingBox)
         canvas!!.drawRect(rect, rectPaint)
 
         // Renders the text at the bottom of the box.
-        canvas.drawText(element.text, rect.left, rect.bottom, textPaint)
+        canvas.drawText(content, rect.left, rect.bottom, textPaint)
     }
 
     companion object {
@@ -56,7 +55,6 @@ class TextGraphic internal constructor(
     }
 
     init {
-        rectPaint = Paint()
         rectPaint.color =
             TEXT_COLOR
         rectPaint.style = Paint.Style.STROKE
