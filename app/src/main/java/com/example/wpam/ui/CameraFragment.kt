@@ -20,11 +20,11 @@ import com.example.wpam.graphic.TextGraphic
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
-import com.google.firebase.ml.vision.text.FirebaseVisionText
 import kotlinx.android.synthetic.main.fragment_camera.*
 import kotlinx.android.synthetic.main.fragment_camera.view.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.util.concurrent.Executors
+
 
 private const val REQUEST_CODE_PERMISSIONS = 10
 private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
@@ -63,6 +63,10 @@ class CameraFragment : Fragment(), LifecycleOwner {
             updateTransform()
         }
 
+        root.retake_button.setOnClickListener {
+            displayCameraPreview()
+        }
+
         return root
     }
 
@@ -92,6 +96,7 @@ class CameraFragment : Fragment(), LifecycleOwner {
             }.build()
 
         val imageCapture = ImageCapture(imageCaptureConfig)
+
         root.capture_button.setOnClickListener {
             imageCapture.takePicture(executor, object : ImageCapture.OnImageCapturedListener() {
                 override fun onCaptureSuccess(image: ImageProxy?, rotationDegrees: Int) {
@@ -100,14 +105,14 @@ class CameraFragment : Fragment(), LifecycleOwner {
                     super.onCaptureSuccess(image, rotationDegrees)
                 }
             })
-
         }
 
         cameraViewModel.image.observe(this@CameraFragment, Observer {
+            displayImagePreview()
             val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
             val imageToProcess = FirebaseVisionImage.fromBitmap(
                 Bitmap.createScaledBitmap(
-                    it.bitmap,
+                    it!!.bitmap,
                     size.width,
                     size.height,
                     false
@@ -138,6 +143,22 @@ class CameraFragment : Fragment(), LifecycleOwner {
         })
 
         CameraX.bindToLifecycle(this, preview, imageCapture)
+    }
+
+    private fun displayCameraPreview() {
+        graphic_overlay.clear()
+        activity!!.runOnUiThread {
+            camera_preview.visibility = View.VISIBLE
+            image_preview.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun displayImagePreview() {
+        image_view.setImageBitmap(cameraViewModel.image.value?.bitmap)
+        activity!!.runOnUiThread {
+            camera_preview.visibility = View.INVISIBLE
+            image_preview.visibility = View.VISIBLE
+        }
     }
 
     private fun updateTransform() {
