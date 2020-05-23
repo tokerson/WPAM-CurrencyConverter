@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.PhotoActivity">
+    tools:context=".ui.CameraFragment">
 
     <TextureView
         android:id="@+id/view_finder"
@@ -14,7 +14,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-         />
+        />
 
     <com.example.wpam.graphic.GraphicOverlay
         android:id="@+id/graphic_overlay"
@@ -30,11 +30,10 @@
         android:id="@+id/capture_button"
         android:layout_width="72dp"
         android:layout_height="72dp"
-        android:layout_margin="24dp"
-        android:layout_marginBottom="188dp"
+        android:layout_marginBottom="72dp"
         app:layout_constraintBottom_toBottomOf="@+id/view_finder"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@android:drawable/ic_menu_camera" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

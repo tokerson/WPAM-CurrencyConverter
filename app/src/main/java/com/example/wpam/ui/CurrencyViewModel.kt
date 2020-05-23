@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.example.wpam.data.CurrencyRepository
 import com.example.wpam.data.model.Currency
 
-class MainViewModel(private val currencyRepository: CurrencyRepository) : ViewModel() {
+class CurrencyViewModel(private val currencyRepository: CurrencyRepository) : ViewModel() {
     val symbols: MutableLiveData<List<Currency>> = currencyRepository.getAllSymbols()
 
     val baseCurrency: MutableLiveData<Currency> = MutableLiveData()
