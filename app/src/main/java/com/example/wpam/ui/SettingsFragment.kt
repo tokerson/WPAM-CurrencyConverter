@@ -25,8 +25,6 @@ class SettingsFragment : Fragment() {
     ): View? {
         root = inflater.inflate(R.layout.fragment_settings, container, false)
 
-
-
         currencyViewModel.symbols.observe(this@SettingsFragment, Observer {
             val adapter = ArrayAdapter(this.context!!, android.R.layout.simple_spinner_item, it)
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -34,17 +32,6 @@ class SettingsFragment : Fragment() {
             symbols_dropdown_2.adapter = adapter
         })
 
-        currencyViewModel.conversionResult.observe(this@SettingsFragment, Observer {
-            conversion_result.text = it.toString()
-        })
-
-        root.calculate_button.setOnClickListener {
-            currencyViewModel.convertCurrencies(
-                symbols_dropdown_1.selectedItem as Currency,
-                symbols_dropdown_2.selectedItem as Currency,
-                price.text.toString().toFloat()
-            )
-        }
         return root
     }
 }

@@ -3,4 +3,7 @@
     <string name="title_activity_bottom_nav">BottomNavActivity</string>
     <string name="title_photo">Camera</string>
     <string name="title_settings">Settings</string>
+    <string name="settings_instruction">To convert a price, please select original currency and the desired currency from options below.</string>
+    <string name="desired_currency">Desired currency:</string>
+    <string name="original_currency">Original currency:</string>
 </resources>
