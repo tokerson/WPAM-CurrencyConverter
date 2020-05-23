@@ -20,10 +20,9 @@ import com.example.wpam.graphic.TextGraphic
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
-import kotlinx.android.synthetic.main.fragment_notifications.*
-import kotlinx.android.synthetic.main.fragment_notifications.view.*
+import kotlinx.android.synthetic.main.fragment_camera.*
+import kotlinx.android.synthetic.main.fragment_camera.view.*
 import org.koin.android.viewmodel.ext.android.viewModel
-import org.koin.ext.checkedStringValue
 import java.util.concurrent.Executors
 
 private const val REQUEST_CODE_PERMISSIONS = 10
@@ -42,7 +41,7 @@ class PhotoActivity : Fragment(), LifecycleOwner {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        root = inflater.inflate(R.layout.fragment_notifications, container, false)
+        root = inflater.inflate(R.layout.fragment_camera, container, false)
 
         val display = activity!!.windowManager.defaultDisplay
         size = Size(display.width, display.height)
