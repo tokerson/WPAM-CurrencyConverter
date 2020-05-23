@@ -6,38 +6,77 @@
     android:layout_height="match_parent"
     tools:context=".ui.CameraFragment">
 
-    <TextureView
-        android:id="@+id/view_finder"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/camera_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:context=".ui.CameraFragment">
 
-    <com.example.wpam.graphic.GraphicOverlay
-        android:id="@+id/graphic_overlay"
+        <TextureView
+            android:id="@+id/view_finder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/capture_button"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginBottom="72dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:backgroundTint="@color/gray"
+            app:fabCustomSize="60dp"
+            app:layout_constraintBottom_toBottomOf="@+id/view_finder"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@android:drawable/ic_menu_camera" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/image_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        app:layout_constraintBottom_toBottomOf="@id/view_finder"
-        app:layout_constraintLeft_toLeftOf="@id/view_finder"
-        app:layout_constraintRight_toRightOf="@id/view_finder"
-        app:layout_constraintTop_toTopOf="@id/view_finder" />
+        android:visibility="invisible"
+        tools:context=".ui.CameraFragment">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/capture_button"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="72dp"
-        android:clickable="true"
-        android:focusable="true"
-        app:backgroundTint="@color/gray"
-        app:fabCustomSize="60dp"
-        app:layout_constraintBottom_toBottomOf="@+id/view_finder"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_camera" />
+        <ImageView
+            android:id="@+id/image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/image_taken_using_camera" />
 
+        <com.example.wpam.graphic.GraphicOverlay
+            android:id="@+id/graphic_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/retake_button"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginBottom="72dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:backgroundTint="@color/gray"
+            app:fabCustomSize="60dp"
+            app:layout_constraintBottom_toBottomOf="@+id/image_preview"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="?attr/homeAsUpIndicator" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

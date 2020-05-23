@@ -6,4 +6,5 @@
     <string name="settings_instruction">To convert a price, please select original currency and the desired currency from options below.</string>
     <string name="desired_currency">Desired currency:</string>
     <string name="original_currency">Original currency:</string>
+    <string name="image_taken_using_camera">image taken using camera</string>
 </resources>
