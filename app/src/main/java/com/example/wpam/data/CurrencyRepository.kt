@@ -24,7 +24,6 @@ class CurrencyRepository(
                     val currencyServiceResponse = currencyService.getSymbols(
                         key = FIXER_API_KEY
                     ).execute().body()
-                    println(currencyServiceResponse)
                     val fetchedSymbols = mutableListOf<Currency>()
 
                     val fetchedSymbols2 =
@@ -57,7 +56,6 @@ class CurrencyRepository(
     fun convertCurrencies(from: Currency, to: Currency, amount: Float): MutableLiveData<Float> {
         class ConvertCurrenciesTask : AsyncTask<Void, Void, Float>() {
             override fun doInBackground(vararg params: Void?): Float {
-                println(from.shortName)
                 val currencyServiceResponse = currencyService.getLatestRates(
                     key = FIXER_API_KEY,
                     symbols = from.shortName + "," + to.shortName
