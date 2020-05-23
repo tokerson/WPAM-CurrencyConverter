@@ -13,7 +13,6 @@ class CurrencyViewModel(private val currencyRepository: CurrencyRepository) : Vi
     val conversionResult: MutableLiveData<Float> = currencyRepository.conversionResult
 
     fun convertCurrencies(from: Currency, to: Currency, amount: Float) {
-        currencyRepository.convertCurrencies(from, to, amount);
-
+        currencyRepository.convertCurrencies(from, to, amount)
     }
 }

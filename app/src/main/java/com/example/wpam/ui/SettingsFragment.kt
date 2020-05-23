@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -31,6 +33,34 @@ class SettingsFragment : Fragment() {
             symbols_dropdown_1.adapter = adapter
             symbols_dropdown_2.adapter = adapter
         })
+
+        root.symbols_dropdown_1.onItemSelectedListener = object : OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+
+            override fun onItemSelected(
+                parentView: AdapterView<*>?,
+                selectedItemView: View,
+                position: Int,
+                id: Long
+            ) {
+                currencyViewModel.baseCurrency.value = symbols_dropdown_1.selectedItem as Currency?
+            }
+        }
+
+        root.symbols_dropdown_2.onItemSelectedListener = object : OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+
+            override fun onItemSelected(
+                parentView: AdapterView<*>?,
+                selectedItemView: View,
+                position: Int,
+                id: Long
+            ) {
+                currencyViewModel.wantedCurrency.value = symbols_dropdown_2.selectedItem as Currency?
+            }
+        }
 
         return root
     }

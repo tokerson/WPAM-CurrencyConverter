@@ -20,6 +20,7 @@ import com.example.wpam.graphic.TextGraphic
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
+import com.google.firebase.ml.vision.text.FirebaseVisionText
 import kotlinx.android.synthetic.main.fragment_camera.*
 import kotlinx.android.synthetic.main.fragment_camera.view.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -118,15 +119,18 @@ class CameraFragment : Fragment(), LifecycleOwner {
                 for (block in firebaseVisionText.textBlocks) {
                     for (line in block.lines) {
                         for (element in line.elements) {
-                            element.text
-                            val regex ="^\\d*\\.?\\d{2}".toRegex()
-                            println(regex.find(element.text, 0)?.value)
-                            val textGraphic: GraphicOverlay.Graphic =
-                                TextGraphic(
-                                    graphic_overlay,
-                                    element
-                                )
-                            graphic_overlay.add(textGraphic)
+                            val regex = "^\\d*[.,]?\\d{2}".toRegex()
+                            val numberValue = regex.find(element.text, 0)?.value
+                            println(numberValue)
+                            if (numberValue != null) {
+                                val textGraphic: GraphicOverlay.Graphic =
+                                    TextGraphic(
+                                        graphic_overlay,
+                                        numberValue,
+                                        element.boundingBox
+                                    )
+                                graphic_overlay.add(textGraphic)
+                            }
                         }
                     }
                 }
