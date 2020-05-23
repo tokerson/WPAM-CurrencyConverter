@@ -28,9 +28,9 @@ import java.util.concurrent.Executors
 private const val REQUEST_CODE_PERMISSIONS = 10
 private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 
-class PhotoActivity : Fragment(), LifecycleOwner {
+class CameraFragment : Fragment(), LifecycleOwner {
 
-    private val photoViewModel: PhotoViewModel by viewModel()
+    private val cameraViewModel: CameraViewModel by viewModel()
     private val executor = Executors.newSingleThreadExecutor()
     private lateinit var viewFinder: TextureView
     private lateinit var size: Size
@@ -103,7 +103,7 @@ class PhotoActivity : Fragment(), LifecycleOwner {
 
         }
 
-        photoViewModel.image.observe(this@PhotoActivity, Observer {
+        cameraViewModel.image.observe(this@CameraFragment, Observer {
             val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
             val imageToProcess = FirebaseVisionImage.fromBitmap(
                 Bitmap.createScaledBitmap(
@@ -190,7 +190,7 @@ class PhotoActivity : Fragment(), LifecycleOwner {
             val mediaImage = imageProxy?.image
             val imageRotation = degreesToFirebaseRotation(degrees)
             if (mediaImage != null) {
-                photoViewModel.image.postValue(
+                cameraViewModel.image.postValue(
                     FirebaseVisionImage.fromMediaImage(
                         mediaImage,
                         imageRotation

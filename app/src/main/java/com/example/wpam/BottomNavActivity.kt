@@ -5,13 +5,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.ui.AppBarConfiguration
-import com.example.wpam.ui.MainFragment
-import com.example.wpam.ui.PhotoActivity
+import com.example.wpam.ui.SettingsFragment
+import com.example.wpam.ui.CameraFragment
 
 class BottomNavActivity : AppCompatActivity() {
 
-    private val settingsFragment = MainFragment()
-    private val photoFragment = PhotoActivity()
+    private val settingsFragment = SettingsFragment()
+    private val photoFragment = CameraFragment()
     private val fm = supportFragmentManager
     private var selectedFragment: Fragment = photoFragment
 
