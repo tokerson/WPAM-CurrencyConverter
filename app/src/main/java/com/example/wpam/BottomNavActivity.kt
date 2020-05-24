@@ -30,9 +30,9 @@ class BottomNavActivity : AppCompatActivity() {
             )
         )
 
+        fm.beginTransaction().add(R.id.nav_host_fragment, photoFragment, "1").commit()
         fm.beginTransaction().add(R.id.nav_host_fragment, settingsFragment, "2").hide(settingsFragment)
             .commit()
-        fm.beginTransaction().add(R.id.nav_host_fragment, photoFragment, "1").commit()
     }
 
     private val navListener = BottomNavigationView.OnNavigationItemSelectedListener {

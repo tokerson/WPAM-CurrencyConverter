@@ -13,11 +13,11 @@ import com.example.wpam.R
 import com.example.wpam.data.model.Currency
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.fragment_settings.view.*
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 
 class SettingsFragment : Fragment() {
 
-    private val currencyViewModel: CurrencyViewModel by viewModel()
+    private val currencyViewModel: CurrencyViewModel by sharedViewModel()
     private lateinit var root: View
 
     override fun onCreateView(
@@ -45,6 +45,7 @@ class SettingsFragment : Fragment() {
                 id: Long
             ) {
                 currencyViewModel.baseCurrency.value = symbols_dropdown_1.selectedItem as Currency?
+                currencyViewModel.updateConversionRate()
             }
         }
 
@@ -59,6 +60,7 @@ class SettingsFragment : Fragment() {
                 id: Long
             ) {
                 currencyViewModel.wantedCurrency.value = symbols_dropdown_2.selectedItem as Currency?
+                currencyViewModel.updateConversionRate()
             }
         }
 

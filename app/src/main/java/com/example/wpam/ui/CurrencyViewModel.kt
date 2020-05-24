@@ -10,9 +10,20 @@ class CurrencyViewModel(private val currencyRepository: CurrencyRepository) : Vi
 
     val baseCurrency: MutableLiveData<Currency> = MutableLiveData()
     val wantedCurrency: MutableLiveData<Currency> = MutableLiveData()
-    val conversionResult: MutableLiveData<Float> = currencyRepository.conversionResult
+    val conversionRate: MutableLiveData<Float> = currencyRepository.conversionRate
+    val loading: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    fun convertCurrencies(from: Currency, to: Currency, amount: Float) {
-        currencyRepository.convertCurrencies(from, to, amount)
+    fun updateConversionRate() {
+        if(baseCurrency.value != null && wantedCurrency.value != null){
+            currencyRepository.getConversionRate(baseCurrency.value!!, wantedCurrency.value!!)
+        }
+    }
+
+    fun startLoading() {
+        loading.value = true
+    }
+
+    fun stopLoading() {
+        loading.value = false
     }
 }

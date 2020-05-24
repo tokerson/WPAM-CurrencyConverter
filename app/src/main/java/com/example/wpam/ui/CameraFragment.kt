@@ -22,6 +22,7 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import kotlinx.android.synthetic.main.fragment_camera.*
 import kotlinx.android.synthetic.main.fragment_camera.view.*
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.util.concurrent.Executors
 
@@ -32,6 +33,7 @@ private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 class CameraFragment : Fragment(), LifecycleOwner {
 
     private val cameraViewModel: CameraViewModel by viewModel()
+    private val currencyViewModel: CurrencyViewModel by sharedViewModel()
     private val executor = Executors.newSingleThreadExecutor()
     private lateinit var viewFinder: TextureView
     private lateinit var size: Size
@@ -67,6 +69,14 @@ class CameraFragment : Fragment(), LifecycleOwner {
             displayCameraPreview()
         }
 
+        currencyViewModel.loading.observe(this@CameraFragment, Observer {
+            if (it) {
+                showLoader()
+            } else {
+                hideLoader()
+            }
+        })
+
         return root
     }
 
@@ -98,6 +108,7 @@ class CameraFragment : Fragment(), LifecycleOwner {
         val imageCapture = ImageCapture(imageCaptureConfig)
 
         root.capture_button.setOnClickListener {
+            currencyViewModel.startLoading()
             imageCapture.takePicture(executor, object : ImageCapture.OnImageCapturedListener() {
                 override fun onCaptureSuccess(image: ImageProxy?, rotationDegrees: Int) {
                     val imageAnalyzer = YourImageAnalyzer()
@@ -125,13 +136,21 @@ class CameraFragment : Fragment(), LifecycleOwner {
                     for (line in block.lines) {
                         for (element in line.elements) {
                             val regex = "^\\d*[.,]?\\d{2}".toRegex()
-                            val numberValue = regex.find(element.text, 0)?.value
-                            println(numberValue)
+                            var numberValue = regex.find(element.text, 0)?.value
                             if (numberValue != null) {
+                                // if price contains comma, replace it with dot to be convertable to float
+                                numberValue = numberValue.replace(',', '.');
+
+                                val convertedPrice =
+                                    "${String.format(
+                                        "%.2f",
+                                        (numberValue.toFloat() * currencyViewModel.conversionRate.value!!)
+                                    )} ${currencyViewModel.wantedCurrency.value!!.shortName}"
+
                                 val textGraphic: GraphicOverlay.Graphic =
                                     TextGraphic(
                                         graphic_overlay,
-                                        numberValue,
+                                        convertedPrice,
                                         element.boundingBox
                                     )
                                 graphic_overlay.add(textGraphic)
@@ -139,10 +158,26 @@ class CameraFragment : Fragment(), LifecycleOwner {
                         }
                     }
                 }
+                currencyViewModel.stopLoading()
             }
         })
 
         CameraX.bindToLifecycle(this, preview, imageCapture)
+    }
+
+    private fun showLoader() {
+        activity!!.runOnUiThread {
+            retake_button.visibility = View.INVISIBLE
+            loadingSpinner.visibility = View.VISIBLE
+        }
+
+    }
+
+    private fun hideLoader() {
+        activity!!.runOnUiThread {
+            retake_button.visibility = View.VISIBLE
+            loadingSpinner.visibility = View.INVISIBLE
+        }
     }
 
     private fun displayCameraPreview() {
