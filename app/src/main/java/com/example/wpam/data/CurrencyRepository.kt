@@ -15,7 +15,7 @@ class CurrencyRepository(
     private val FIXER_API_KEY = context.getString(R.string.fixer_api_key)
 
     val symbols = MutableLiveData<List<Currency>>()
-    val conversionResult = MutableLiveData<Float>()
+    val conversionRate = MutableLiveData<Float>()
 
     fun getAllSymbols(): MutableLiveData<List<Currency>> {
         class GetAllSymbolsTask : AsyncTask<Void, Void, List<Currency>>() {
@@ -53,8 +53,8 @@ class CurrencyRepository(
         return symbols
     }
 
-    fun convertCurrencies(from: Currency, to: Currency, amount: Float): MutableLiveData<Float> {
-        class ConvertCurrenciesTask : AsyncTask<Void, Void, Float>() {
+    fun getConversionRate(from: Currency, to: Currency): MutableLiveData<Float> {
+        class GetConversionRateTask : AsyncTask<Void, Void, Float>() {
             override fun doInBackground(vararg params: Void?): Float {
                 val currencyServiceResponse = currencyService.getLatestRates(
                     key = FIXER_API_KEY,
@@ -66,16 +66,16 @@ class CurrencyRepository(
                 val baseRate = rates.get(from.shortName).asFloat
                 val toConvertRate = rates.get(to.shortName).asFloat
 
-                return amount *  toConvertRate / baseRate
+                return toConvertRate / baseRate
             }
 
             override fun onPostExecute(result: Float?) {
                 super.onPostExecute(result)
-                conversionResult.value = result
+                conversionRate.value = result
             }
         }
 
-        ConvertCurrenciesTask().execute()
-        return conversionResult
+        GetConversionRateTask().execute()
+        return conversionRate
     }
 }

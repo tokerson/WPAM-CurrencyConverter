@@ -41,7 +41,7 @@ class TextGraphic internal constructor(
 
         // Draws the bounding box around the TextBlock.
         val rect = RectF(boundingBox)
-        canvas!!.drawRect(rect, rectPaint)
+        canvas!!.drawRect(rect.left, rect.top, textPaint.measureText(content) + rect.right, rect.bottom, rectPaint)
 
         // Renders the text at the bottom of the box.
         canvas.drawText(content, rect.left, rect.bottom, textPaint)
@@ -49,15 +49,16 @@ class TextGraphic internal constructor(
 
     companion object {
         private const val TAG = "TextGraphic"
-        private const val TEXT_COLOR = Color.RED
+        private const val TEXT_COLOR = Color.WHITE
+        private const val RECT_COLOR = Color.BLACK
         private const val TEXT_SIZE = 54.0f
         private const val STROKE_WIDTH = 4.0f
     }
 
     init {
         rectPaint.color =
-            TEXT_COLOR
-        rectPaint.style = Paint.Style.STROKE
+            RECT_COLOR
+        rectPaint.style = Paint.Style.FILL
         rectPaint.strokeWidth =
             STROKE_WIDTH
         textPaint = Paint()
