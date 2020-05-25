@@ -10,7 +10,7 @@ import java.net.SocketTimeoutException
 
 class CurrencyRepository(
     private val currencyService: CurrencyService,
-    private val context: Context
+    context: Context
 ) {
     private val FIXER_API_KEY = context.getString(R.string.fixer_api_key)
 

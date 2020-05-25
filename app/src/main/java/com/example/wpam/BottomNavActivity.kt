@@ -10,8 +10,8 @@ import com.example.wpam.ui.CameraFragment
 
 class BottomNavActivity : AppCompatActivity() {
 
-    private val settingsFragment = SettingsFragment()
     private val photoFragment = CameraFragment()
+    private val settingsFragment = SettingsFragment()
     private val fm = supportFragmentManager
     private var selectedFragment: Fragment = photoFragment
 
@@ -22,8 +22,6 @@ class BottomNavActivity : AppCompatActivity() {
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
         navView.setOnNavigationItemSelectedListener(navListener)
 
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         AppBarConfiguration(
             setOf(
                 R.id.navigation_photo, R.id.navigation_settings

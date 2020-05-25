@@ -30,11 +30,11 @@ class SettingsFragment : Fragment() {
         currencyViewModel.symbols.observe(this@SettingsFragment, Observer {
             val adapter = ArrayAdapter(this.context!!, android.R.layout.simple_spinner_item, it)
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            symbols_dropdown_1.adapter = adapter
-            symbols_dropdown_2.adapter = adapter
+            original_symbol_dropdown.adapter = adapter
+            desired_symbol_dropdown.adapter = adapter
         })
 
-        root.symbols_dropdown_1.onItemSelectedListener = object : OnItemSelectedListener {
+        root.original_symbol_dropdown.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
 
@@ -44,12 +44,12 @@ class SettingsFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-                currencyViewModel.baseCurrency.value = symbols_dropdown_1.selectedItem as Currency?
+                currencyViewModel.baseCurrency.value = original_symbol_dropdown.selectedItem as Currency?
                 currencyViewModel.updateConversionRate()
             }
         }
 
-        root.symbols_dropdown_2.onItemSelectedListener = object : OnItemSelectedListener {
+        root.desired_symbol_dropdown.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
 
@@ -59,7 +59,7 @@ class SettingsFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-                currencyViewModel.wantedCurrency.value = symbols_dropdown_2.selectedItem as Currency?
+                currencyViewModel.wantedCurrency.value = desired_symbol_dropdown.selectedItem as Currency?
                 currencyViewModel.updateConversionRate()
             }
         }

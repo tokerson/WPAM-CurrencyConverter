@@ -135,7 +135,7 @@ class CameraFragment : Fragment(), LifecycleOwner {
                 for (block in firebaseVisionText.textBlocks) {
                     for (line in block.lines) {
                         for (element in line.elements) {
-                            val regex = "^\\d*[.,]?\\d{2}".toRegex()
+                            val regex = "^\\d*[.,]?\\d{0,2}".toRegex()
                             var numberValue = regex.find(element.text, 0)?.value
                             if (numberValue != null) {
                                 // if price contains comma, replace it with dot to be convertable to float
@@ -168,7 +168,7 @@ class CameraFragment : Fragment(), LifecycleOwner {
     private fun showLoader() {
         activity!!.runOnUiThread {
             retake_button.visibility = View.INVISIBLE
-            loadingSpinner.visibility = View.VISIBLE
+            loading_spinner.visibility = View.VISIBLE
         }
 
     }
@@ -176,7 +176,7 @@ class CameraFragment : Fragment(), LifecycleOwner {
     private fun hideLoader() {
         activity!!.runOnUiThread {
             retake_button.visibility = View.VISIBLE
-            loadingSpinner.visibility = View.INVISIBLE
+            loading_spinner.visibility = View.INVISIBLE
         }
     }
 

@@ -9,6 +9,7 @@ import org.koin.dsl.module.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+// https not available in free tier
 const val FIXER_API_URL = "http://data.fixer.io/api/"
 
 val koinModule = module {

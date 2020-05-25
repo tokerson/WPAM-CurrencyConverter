@@ -7,7 +7,6 @@ import com.example.wpam.data.model.Currency
 
 class CurrencyViewModel(private val currencyRepository: CurrencyRepository) : ViewModel() {
     val symbols: MutableLiveData<List<Currency>> = currencyRepository.getAllSymbols()
-
     val baseCurrency: MutableLiveData<Currency> = MutableLiveData()
     val wantedCurrency: MutableLiveData<Currency> = MutableLiveData()
     val conversionRate: MutableLiveData<Float> = currencyRepository.conversionRate
