@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WPAM</string>
+    <string name="app_name">CurrChange</string>
     <string name="title_activity_bottom_nav">BottomNavActivity</string>
     <string name="title_photo">Camera</string>
     <string name="title_settings">Settings</string>
